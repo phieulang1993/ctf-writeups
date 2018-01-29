@@ -46,9 +46,9 @@ int __cdecl ChangeName(void *buf)
 ```
 
 We can see stack overflow in ChangeName function.
-> name in ebp-0xE4
-> round in ebp-0xD4
-> but read(0, name, 0x11)
+* name in ebp-0xE4
+* round in ebp-0xD4
+* but read(0, name, 0x11)
 so we can overwrite **round** variable.
 
 In Play function:
