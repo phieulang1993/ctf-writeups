@@ -4,55 +4,6 @@ import sys
 
 def BaskinRobins31(DEBUG):
 	t = 0.3
-	def Add(content, pageSize=-1):
-		r.sendline("1")
-		r.recvuntil("Size of page :")
-		if pageSize==-1:
-			pageSize = len(content)
-		r.sendline(str(pageSize))
-		if pageSize>0:
-			r.recvuntil("Content :")
-			r.send(content)
-			time.sleep(t)
-		r.recvuntil("Done !")
-		res = r.recvuntil("Your choice :")
-		return res
-	
-	def View(idx):
-		r.sendline("2")
-		r.recvuntil("Index of page :")
-		r.sendline(str(idx))
-		res = r.recvuntil("----------------------")
-		r.recvuntil("Your choice :")
-		return res
-	
-	def Edit(idx, content):
-		r.sendline("3")
-		r.recvuntil("Index of page :")
-		r.sendline(str(idx))
-		r.recvuntil("Content:")
-		r.send(content)
-		time.sleep(t)
-		r.recvuntil("Done !")
-		res = r.recvuntil("Your choice :")
-		return res
-	
-	def Info(Author=""):
-		r.sendline("4")
-		res = r.recvuntil("Do you want to change the author ? (yes:1 / no:0)")
-		if len(Author)==0:
-			r.sendline("0")
-		else:
-			r.sendline("1")
-			r.recvuntil("Author :")
-			log.info('Author: %#s' % Author)
-			r.send(Author)
-			time.sleep(t)
-		r.recvuntil("Your choice :")
-		return res
-	
-	def Exit():
-		r.sendline("5")
 	
 	if DEBUG=="1":
 		t = 0.005
