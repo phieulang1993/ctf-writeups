@@ -2,7 +2,7 @@ encoded = "\x56\xd0\xd1\xe5\x4d\xcd\xe2\x9b\xdc\x94\xae\x9f\xbd\xa9\x9f\x8a\x93\
 
 key = "\xff"+"key-is-wtf"*7
 flag = ""
-for i in xrange(0, 69):
+for i in xrange(0, 68):
 	e = ord(encoded[i])
 	k = ord(key[i])
 	flag += chr(((e+0x100)-k)&0xff)
