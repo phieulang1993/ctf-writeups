@@ -1,2 +1,2 @@
 Check time delay, you has morse code.
-See [lights.idb](/lights.idb)
+See [lights.idb](/2018/VolgaCTF/lights/lights.idb)
