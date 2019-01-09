@@ -44,14 +44,20 @@ unsigned int __fastcall dl_make_stack_executable(_QWORD *a1)
   return result;
 }
 ```
-click double vào `_stack_prot` ta thấy biến này nằm ở cuối segment `.data.rel.ro` và có giá trị là `0x1000000`
-Xrefs _stack_prot ta thấy chỉ có 2 hàm dùng tới nó là `_dl_map_object_from_fd_constprop_9` và `_dl_make_stack_executable`
+Click double vào `_stack_prot` ta thấy biến này nằm ở cuối segment `.data.rel.ro` và có giá trị là `0x1000000`.
+
+Xrefs _stack_prot ta thấy chỉ có 2 hàm dùng tới nó là `_dl_map_object_from_fd_constprop_9` và `_dl_make_stack_executable`.
+
 Trong đó `_dl_make_stack_executable` sử dụng duy nhất 1 tham số để so sánh với `_libc_stack_end`
 
-Ta thấy trong chương trình chỉ có 1 segment `.data.rel.ro`
-Áp dụng sang trường hợp binary `program` của bài ta dùng shift f7 trên IDA để mở danh sách các segment, dò xuống ta click vào segment LOAD tại địa chỉ 0x6B8EF4 nằm ngay dưới segment `.data.rel.ro` lăn chuột lên chút ta thấy ngay `.data.rel.ro:00000000006B8EF0 dword_6B8EF0    dd 1000000h`
-Như vậy `dword_6B8EF0` chính là `_stack_prot`, rename lại rồi xrefs ta thấy có 2 hàm dùng tới `_stack_prot` là `sub_476560` và `sub_47F780`
-Xem qua 2 hàm thì chỉ có `sub_47F780` sử dụng 1 tham số nên xác định hàm này là `_dl_make_stack_executable`
+Ta thấy trong chương trình chỉ có 1 segment `.data.rel.ro`.
+
+Áp dụng sang trường hợp binary `program` của bài ta dùng shift f7 trên IDA để mở danh sách các segment, dò xuống ta click vào segment LOAD tại địa chỉ 0x6B8EF4 nằm ngay dưới segment `.data.rel.ro` lăn chuột lên chút ta thấy ngay `.data.rel.ro:00000000006B8EF0 dword_6B8EF0    dd 1000000h`.
+
+Như vậy `dword_6B8EF0` chính là `_stack_prot`, rename lại rồi xrefs ta thấy có 2 hàm dùng tới `_stack_prot` là `sub_476560` và `sub_47F780`.
+
+Xem qua 2 hàm thì chỉ có `sub_47F780` sử dụng 1 tham số nên xác định hàm này là `_dl_make_stack_executable`.
+
 ```c
 unsigned int __fastcall dl_make_stack_executable(_QWORD *a1)
 {
@@ -71,8 +77,10 @@ unsigned int __fastcall dl_make_stack_executable(_QWORD *a1)
   *v1 = 0LL;
   dword_6BA1E8 |= 1u;
   return result;
-}```
-`a1` được so sánh với `qword_6B8AB0` => `qword_6B8AB0` chính là `_libc_stack_end`
-Vậy ta đã có đủ dữ kiện để dùng được `_dl_make_stack_executable`
+}
+```
+`a1` được so sánh với `qword_6B8AB0` => `qword_6B8AB0` chính là `_libc_stack_end`.
 
-Lần sau không cần phải compile kiểm tra nữa mà ta cứ mở IDA lên tìm segment `LOAD` ngay dưới `.data.rel.ro` là tìm được `stack_prot` là tìm được `_dl_make_stack_executable`
+Vậy ta đã có đủ dữ kiện để dùng được `_dl_make_stack_executable`.
+
+Lần sau không cần phải compile kiểm tra nữa mà ta cứ mở IDA lên tìm segment `LOAD` ngay dưới `.data.rel.ro` là tìm được `stack_prot` là tìm được `_dl_make_stack_executable`.
