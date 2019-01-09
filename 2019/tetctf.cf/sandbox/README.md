@@ -42,7 +42,8 @@ unsigned int __fastcall dl_make_stack_executable(_QWORD *a1)
   *v4 = 0LL;
   dl_stack_flags |= 1u;
   return result;
-}```
+}
+```
 click double vào `_stack_prot` ta thấy biến này nằm ở cuối segment `.data.rel.ro` và có giá trị là `0x1000000`
 Xrefs _stack_prot ta thấy chỉ có 2 hàm dùng tới nó là `_dl_map_object_from_fd_constprop_9` và `_dl_make_stack_executable`
 Trong đó `_dl_make_stack_executable` sử dụng duy nhất 1 tham số để so sánh với `_libc_stack_end`
