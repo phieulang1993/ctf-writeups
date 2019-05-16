@@ -213,6 +213,7 @@ Phần sau nữa ta không cần quan tâm vì khai thác stack buffer overflow 
 * Gọi **_dl_make_stack_executable** rồi gọi tới gadget **call rsp** để thực thi shellcode trên buf
 
 Với ropchain ta cần lượng payload khá dài nên phù hợp với những bài cho input buf nhiều.
+
 Với _dl_make_stack_executable thì lượng buf không cần dài nhưng ta cần tìm ra các symbols: **__stack_prot**, **__libc_stack_end**, **_dl_make_stack_executable**.
 Giờ ta thử tiếp cận theo 2 hướng:
 ### ropchain
