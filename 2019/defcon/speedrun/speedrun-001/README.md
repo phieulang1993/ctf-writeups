@@ -212,8 +212,8 @@ Phần sau nữa ta không cần quan tâm vì khai thác stack buffer overflow 
 * ropchain
 * Gọi **_dl_make_stack_executable** rồi gọi tới gadget **call rsp** để thực thi shellcode trên buf
 
-- Với ropchain ta cần lượng payload khá dài nên phù hợp với những bài cho input buf nhiều.
-- Với _dl_make_stack_executable thì lượng buf không cần dài nhưng ta cần tìm ra các symbols: **__stack_prot**, **__libc_stack_end**, **_dl_make_stack_executable**.
+Với ropchain ta cần lượng payload khá dài nên phù hợp với những bài cho input buf nhiều.
+Với _dl_make_stack_executable thì lượng buf không cần dài nhưng ta cần tìm ra các symbols: **__stack_prot**, **__libc_stack_end**, **_dl_make_stack_executable**.
 Giờ ta thử tiếp cận theo 2 hướng:
 ### ropchain
 Ta sử dụng [ROPgadget](https://github.com/JonathanSalwan/ROPgadget) để tạo ropchain.
@@ -535,5 +535,7 @@ phieulang
 
 # Kết luận
 Vậy sao này gặp các bài khác tương tự ta cần làm sao? Ta chỉ việc sửa buffsize cho hàm **exploit_stack_overflow_static_binary** là đã có thể khai thác được (nếu bài cho buf đủ hoặc nhiều hơn payload).
+
 Trường hợp buf ngắn hơn thì ta cần phải optimaze lại payload tùy theo context của các thanh ghi, stack hiện có.
+
 Với mỗi bài dù dễ hay khó ta nên viết lại script theo hướng tự động nhiều nhất và phù hợp với nhiều trường hợp nhất có thể để sau này vươn ra biển lớn còn đuổi theo các bạn khác. Chứ mấy lần mình đi thi cuộc thi quốc tế chưa kịp đọc đề thì đội bạn đã giải ra flag mất rồi :facepalm:
