@@ -329,6 +329,54 @@ phieulang
 Khá nhanh đó nhưng ta phải chạy command Ropgadget để tạo ropchain rồi copy vào script exploit (bạn nào làm rảnh thì có thể viết script cho nó tạo tự động rồi share mình với).
 
 ### _dl_make_stack_executable
+Hàm **_dl_make_stack_executable** làm gì? Như cái tên của nó là làm cho stack có thể thực thi (execute) được.
+```
+.text:000000000047FD40 ; unsigned int __fastcall dl_make_stack_executable(_QWORD *stack_endp)
+.text:000000000047FD40 _dl_make_stack_executable proc near     ; CODE XREF: sub_476B20+E9F↑p
+.text:000000000047FD40                                         ; DATA XREF: .data:off_6BA218↓o
+.text:000000000047FD40 ; __unwind {
+.text:000000000047FD40                 mov     rsi, cs:_dl_pagesize
+.text:000000000047FD47                 push    rbx
+.text:000000000047FD48                 mov     rbx, rdi
+.text:000000000047FD4B                 mov     rdx, [rdi]
+.text:000000000047FD4E                 mov     rdi, rsi
+.text:000000000047FD51                 neg     rdi
+.text:000000000047FD54                 and     rdi, rdx
+.text:000000000047FD57                 cmp     rdx, cs:__libc_stack_end
+.text:000000000047FD5E                 jnz     short loc_47FD80
+.text:000000000047FD60                 mov     edx, cs:stack_prot
+.text:000000000047FD66                 call    mprotect
+.text:000000000047FD6B                 test    eax, eax
+.text:000000000047FD6D                 jnz     short loc_47FD90
+.text:000000000047FD6F                 mov     qword ptr [rbx], 0
+.text:000000000047FD76                 or      cs:dword_6BA1E8, 1
+.text:000000000047FD7D                 pop     rbx
+.text:000000000047FD7E                 retn
+.text:000000000047FD7E ; ---------------------------------------------------------------------------
+.text:000000000047FD7F                 align 20h
+.text:000000000047FD80
+.text:000000000047FD80 loc_47FD80:                             ; CODE XREF: _dl_make_stack_executable+1E↑j
+.text:000000000047FD80                 mov     eax, 1
+.text:000000000047FD85                 pop     rbx
+.text:000000000047FD86                 retn
+```
+Hàm _dl_make_stack_executable sẽ lấy tham số đầu vào là **stack_endp** so sánh với **cs:__libc_stack_end** nếu khác thì return 1, nếu bằng thì tiếp tục.
+
+Hàm mprotect với các tham số **mprotect(*stack_endp & -cs:_dl_pagesize, cs:_dl_pagesize, cs:stack_prot)** với **cs:_dl_pagesize**
+```
+.data:00000000006BA1F8 _dl_pagesize    dq 1000h
+```
+
+Như vậy ta cần control **cs:stack_prot** thành **0x7 (PROT_READ | PROT_WRITE | PROT_EXEC)**  <https://unix.superglobalmegacorp.com/Net2/newsrc/sys/mman.h.html>
+
+Debug:
+```
+ ► 0x44a685    syscall  <SYS_mprotect>
+        addr: 0x7ffeeeada000 ◂— 0x0
+        len: 0x1000
+        prot: 0x7
+```
+
 Cách này sài chung được cho nhiều bài **statically linked** vì payload nó ngắn hơn so với ropchain.
 Quan trọng là bài này bị strip symbols vì vậy ta cần cách nào đó để tìm được các symbol cần thiết nhanh nhất có thể.
 Như đã đề cập ở writeup [sandbox kỳ tetctf](https://github.com/phieulang1993/ctf-writeups/tree/master/2019/tetctf.cf/sandbox) giờ mình sử dụng pwntools kết hợp với 1 số công cụ khác để tìm tự động:
