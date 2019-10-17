@@ -22,7 +22,7 @@ def trick_or_treat(DEBUG):
 	"""
 	magic = malloc(100000000) = 0x7ffff1a85010
 	0x7ffff1a85000     0x7ffff79e4000 rw-p  5f5f000 0
-    0x7ffff79e4000     0x7ffff7bcb000 r-xp   1e7000 0      /home/phieulang/ctf/2019/HITCON/trick/libc.so.6
+	0x7ffff79e4000     0x7ffff7bcb000 r-xp   1e7000 0      /home/phieulang/ctf/2019/HITCON/trick/libc.so.6
 	"""
 	r.recvuntil("Magic:")
 	addr = int(r.recvuntil("\n").strip(),16)
