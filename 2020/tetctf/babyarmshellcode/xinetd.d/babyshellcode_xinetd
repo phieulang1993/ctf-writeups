@@ -1,0 +1,16 @@
+service babyshellcode
+{
+    disable = no
+    type = UNLISTED
+    wait = no
+    server = /home/babyshellcode/run.sh
+    socket_type = stream
+    protocol = tcp
+    user = babyshellcode
+    host = 0.0.0.0
+    port = 9999
+    flags = REUSE
+    per_source = 5
+    rlimit_cpu = 3
+    nice = 18
+}
